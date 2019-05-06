@@ -1,0 +1,95 @@
+package com.redhat.rhc.stp.ei;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Configuration parameters filled in from application.properties and overridden
+ * using env variables on Openshift.
+ */
+@Configuration
+@ConfigurationProperties(prefix = "amqp")
+public class AMQPConfiguration {
+
+	/**
+	 * AMQ service host
+	 */
+	private String host;
+
+	/**
+	 * AMQ service port
+	 */
+	private Integer port;
+
+	/**
+	 * AMQ username
+	 */
+	private String username;
+
+	/**
+	 * AMQ password
+	 */
+	private String password;
+
+	/**
+	 * AMQ protocol
+	 */
+	private String protocol;
+	
+	/**
+	 * AMQ query string
+	 */
+	private String queryString;
+	
+	public AMQPConfiguration() {
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public Integer getPort() {
+		return port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public String getQueryString() {
+		return queryString;
+	}
+
+	public void setQueryString(String queryString) {
+		this.queryString = queryString;
+	}
+
+}

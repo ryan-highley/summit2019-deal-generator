@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+	<camelContext id="camel"
+		xmlns="http://camel.apache.org/schema/spring">
+		<route id="cashopsfixed-deal-route">
+			<from id="cashopsfixed-timer" uri="timer:cacheopsfixed?period=60000" />
+			<setHeader headerName="dealFileName">
+				<constant>CashOpsFixed.xml</constant>
+			</setHeader>
+			<setHeader headerName="dealMessageTopic">
+				<constant>wtCashOpsFixedDeals</constant>
+			</setHeader>
+			<to id="cashopsfixed-to-direct-get-deal" uri="direct:get-deal"/>
+			<to id="cashopsfixed-to-direct-publish-deal" uri="direct:publish-deal"/>
+			<to id="cashopsfixed-route-log" uri="log:cashopsfixed-send?level=DEBUG"/>
+		</route>
+		
+		<route id="cashopshourlycost-deal-route">
+			<from id="cashopshourlycost-timer" uri="timer:cacheopshourlycost?period=60000" />
+			<setHeader headerName="dealFileName">
+				<constant>CashOpsHourlyCost.xml</constant>
+			</setHeader>
+			<setHeader headerName="dealMessageTopic">
+				<constant>wtCashOpsHourlyCostDeals</constant>
+			</setHeader>
+			<to id="cashopshourlycost-to-direct-get-deal" uri="direct:get-deal"/>
+			<to id="cashopshourlycost-to-direct-publish-deal" uri="direct:publish-deal"/>
+			<to id="cashopshourlycost-route-log" uri="log:cashopshourlycost-send?level=DEBUG"/>
+		</route>
+		
+		<route id="heatrate-deal-route">
+			<from id="heatrate-timer" uri="timer:heatrate?period=60000" />
+			<setHeader headerName="dealFileName">
+				<constant>WT%20to%20Endur%20XML%20Heat%20Rate.xml</constant>
+			</setHeader>
+			<setHeader headerName="dealMessageTopic">
+				<constant>wtHeatRateDeals</constant>
+			</setHeader>
+			<to id="heatrate-to-direct-get-deal" uri="direct:get-deal"/>
+			<to id="heatrate-to-direct-publish-deal" uri="direct:publish-deal"/>
+			<to id="heatrate-route-log" uri="log:heatrate-send?level=DEBUG"/>
+		</route>
+		
+		<route id="powerfixed-deal-route">
+			<from id="powerfixed-timer" uri="timer:powerfixed?period=60000" />
+			<setHeader headerName="dealFileName">
+				<constant>RachelTestMISOFixed.xml</constant>
+			</setHeader>
+			<setHeader headerName="dealMessageTopic">
+				<constant>wtPowerFixedDeals</constant>
+			</setHeader>
+			<to id="powerfixed-to-direct-get-deal" uri="direct:get-deal"/>
+			<to id="powerfixed-to-direct-publish-deal" uri="direct:publish-deal"/>
+			<to id="powerfixed-route-log" uri="log:powerfixed-send?level=DEBUG"/>
+		</route>
+		
+		<route id="get-deal">
+			<from id="from-direct-get-deal" uri="direct:get-deal"/>
+			<setHeader headerName="CamelHttpMethod">
+				<constant>GET</constant>
+			</setHeader>
+			<toD id="get-deal"
+				uri="http4://deal-server.deal-source.svc:8080/deals/${header.dealFileName}" />
+		</route>
+		
+		<route id="publish-deal-message">
+			<from id="from-direct-publish-deal" uri="direct:publish-deal"/>
+			<toD id="publish-deal" uri="amqp:topic:${header.dealMessageTopic}"/>
+		</route>
+		
+		<route id="recv-cashopsfixed-route">
+			<from uri="amqp:topic:wtCashOpsFixedDeals"/>
+			<to uri="log:cashopsfixed-recv?level=DEBUG"/>
+		</route>
+		
+		<route id="recv-cashopshourlycost-route">
+			<from uri="amqp:topic:wtCashOpsHourlyCostDeals"/>
+			<to uri="log:cashopshourlycost-recv?level=DEBUG"/>
+		</route>
+		
+		<route id="recv-heatrate-route">
+			<from uri="amqp:topic:wtHeatRateDeals"/>
+			<to uri="log:heatrate-recv?level=DEBUG"/>
+		</route>
+		
+		<route id="recv-powerfixed-route">
+			<from uri="amqp:topic:wtPowerFixedDeals"/>
+			<to uri="log:powerfixed-recv?level=DEBUG"/>
+		</route>
+		
+		<route id="recv-outbounddeals-route">
+			<from uri="amqp:queue:outboundDeals"/>
+			<to uri="log:outbound-recv?showAll=true&amp;multiline=true"/>
+		</route>
+	</camelContext>
+</beans>

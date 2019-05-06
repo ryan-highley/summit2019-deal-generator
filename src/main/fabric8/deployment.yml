@@ -1,0 +1,28 @@
+spec:
+  template:
+    spec:
+      containers:
+        - 
+          resources:
+            requests:
+              cpu: "0.2"
+              memory: 256Mi
+            limits:
+              cpu: "1.0"
+              memory: 256Mi
+          env:
+          - name: SPRING_APPLICATION_JSON
+            value: '{"server":{"undertow":{"io-threads":1, "worker-threads":2 }}}'
+          - name: AMQP_PROTOCOL
+            value: amqps
+          - name: AMQP_HOST
+            value: messaging-fp210wqh1l.amq-online-infra.svc
+          - name: AMQP_PORT
+            value: 5671
+          - name: AMQP_USERNAME
+            value: rhighley-msguser
+          - name: AMQP_PASSWORD
+            value: password
+          - name: AMQP_QUERY_STRING
+            value: transport.trustAll=true
+            
